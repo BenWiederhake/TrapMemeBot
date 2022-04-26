@@ -42,7 +42,7 @@ That should be it.
 
 The directory `trap_pics/` contains:
 - The magic file `.TRAP_PICS`, which must contain the string `RIGHT HERE\n` (where the `\n` is the "newline byte"). This is checked on startup, to make sure all paths are expected.
-- The directory `suggested`, which contains images that have been suggested. The names are the SHA256 of the content, plus extension.
+- The directory `suggested`, which contains images that have been suggested. The names are random 24-byte hex strings, without extension.
       - It also contains the magic file `.keep`, which must be empty, and is mainly for git
 - The directory `accepted`, which contains accepted images. This directory must be non-empty on startup.
       - It also contains the magic file `.keep`, which must be empty, and is mainly for git

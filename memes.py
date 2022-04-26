@@ -1,8 +1,8 @@
 #!/bin/false
 
-import hashlib
 import logging
 import os
+import secrets
 
 logger = logging.getLogger(__name__)
 
@@ -15,10 +15,6 @@ def readall(filename):
 def writeall(filename, data):
     with open(filename, 'wb') as fp:
         return fp.write(data)
-
-
-def check_hash(filename):
-    logger.info(f'FIXME: Not actually checking {filename} D:')  # FIXME
 
 
 class Storage:
@@ -36,24 +32,26 @@ class Storage:
         self.suggested.remove('.keep')
         self.accepted.remove('.keep')
 
-        # Check that all files have valid SHA256 sums:
-        logger.info(f'Found {len(self.suggested)} suggested memes. Checking consistency ...')
-        for filename in self.suggested:
-            check_hash(filename)
-        logger.info(f'Success. Found {len(self.accepted)} accepted memes. Checking consistency ...')
-        for filename in self.accepted:
-            check_hash(filename)
-        logger.info(f'Success. We are good to go!')
+        logger.info(f'Found {len(self.suggested)} suggested and {len(self.accepted)} memes.')
         assert len(self.accepted) > 0, 'There must be an initially-accepted meme.'
 
-    def meme_fetch_random(self):
+    def fetch_random_suggested(self):
         raise NotImplementedError()
 
-    def meme_suggest(self, img):
+    def fetch_random_accepted(self):
+        return f'trap_pics/accepted/{secrets.choice(list(self.accepted))}'
+
+    def do_suggest(self, hexname):
+        self.suggested.add(hexname)
+
+    def do_accept(self, name):
         raise NotImplementedError()
 
-    def meme_accept(self, name):
+    def do_reject(self, meme):
         raise NotImplementedError()
 
-    def meme_reject(self, meme):
-        raise NotImplementedError()
+    def len_suggested(self):
+        return len(self.suggested)
+
+    def len_accepted(self):
+        return len(self.accepted)
