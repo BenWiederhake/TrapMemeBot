@@ -54,7 +54,7 @@ class Storage:
             return f'File not found: trap_pics/suggested/{name}.jpg'
 
         self.suggested.remove(name)
-        self.accepted.add(name)
+        self.accepted.add(f'{name}.jpg')
 
     def do_reject(self, name):
         if name not in self.suggested:
