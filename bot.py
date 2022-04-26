@@ -23,7 +23,7 @@ BOT = None
 
 def cmd_trap(update: Update, _context: CallbackContext) -> None:
     with open(MEMES.fetch_random_accepted(), 'rb') as fp:
-        update.effective_message.reply_photo(fp, caption="It's a trap!")
+        update.effective_message.reply_photo(fp, caption="It's a /trap!")
 
 
 def cmd_start(update: Update, _context: CallbackContext) -> None:
@@ -45,7 +45,22 @@ def cmd_accept_reject(update: Update, _context: CallbackContext) -> None:
     if update.effective_user.username != secret.OWNER:
         return
 
-    update.effective_message.reply_text(f'FIXME: NOT IMPLEMENTED')
+    text = update.message.text
+
+    if text.startswith('/accept_'):
+        text = text[len('/accept_'):]
+        errmsg = MEMES.do_accept(text)
+        if errmsg is None:
+            update.effective_message.reply_text('Success!')
+        else:
+            update.effective_message.reply_text(f'Failure! {errmsg}')
+    elif text.startswith('/reject_'):
+        text = text[len('/reject_'):]
+        errmsg = MEMES.do_reject(text)
+        if errmsg is None:
+            update.effective_message.reply_text('Success!')
+        else:
+            update.effective_message.reply_text(f'Failure! {errmsg}')
 
 
 def cmd_receive_pic(update: Update, _context: CallbackContext) -> None:
@@ -57,13 +72,13 @@ def cmd_receive_pic(update: Update, _context: CallbackContext) -> None:
 
     photo_file = update.message.photo[-1].get_file()
     hexname = secrets.token_hex(24)  # Longer is too long for telegram commands
-    incoming_name = f'trap_pics/incoming/{hexname}'
+    incoming_name = f'trap_pics/incoming/{hexname}.jpg'
     if os.path.exists(incoming_name):
         raise AssertionError('wtf')
     logger.info(f'Downloading meme from user @{update.effective_user.username} into {incoming_name}')
     photo_file.download(incoming_name)
     assert os.path.exists(incoming_name)
-    suggested_name = f'trap_pics/suggested/{hexname}'
+    suggested_name = f'trap_pics/suggested/{hexname}.jpg'
     logger.info(f'Success! Moving to {suggested_name}')
     os.rename(incoming_name, suggested_name)
     MEMES.do_suggest(hexname)

@@ -12,9 +12,10 @@ def readall(filename):
         return fp.read()
 
 
-def writeall(filename, data):
-    with open(filename, 'wb') as fp:
-        return fp.write(data)
+def strip_extension(filename):
+    if filename.endswith('.jpg'):
+        filename = filename[:-len('.jpg')]
+    return filename
 
 
 class Storage:
@@ -25,7 +26,7 @@ class Storage:
         assert readall('trap_pics/accepted/.keep') == b'', 'Wrong working directory?'
 
         # Read which files exist:
-        self.suggested = set(os.listdir('trap_pics/suggested/'))
+        self.suggested = set(strip_extension(e) for e in os.listdir('trap_pics/suggested/'))
         self.accepted = set(os.listdir('trap_pics/accepted/'))
 
         # Filter organizational files:
@@ -36,7 +37,7 @@ class Storage:
         assert len(self.accepted) > 0, 'There must be an initially-accepted meme.'
 
     def fetch_random_suggested(self):
-        raise NotImplementedError()
+        raise NotImplementedError()  # FIXME
 
     def fetch_random_accepted(self):
         return f'trap_pics/accepted/{secrets.choice(list(self.accepted))}'
@@ -45,10 +46,25 @@ class Storage:
         self.suggested.add(hexname)
 
     def do_accept(self, name):
-        raise NotImplementedError()
+        if name not in self.suggested:
+            return 'Not in suggested anymore'
+        try:
+            os.rename(f'trap_pics/suggested/{name}.jpg', f'trap_pics/accepted/{name}.jpg')
+        except FileNotFoundError:
+            return f'File not found: trap_pics/suggested/{name}.jpg'
 
-    def do_reject(self, meme):
-        raise NotImplementedError()
+        self.suggested.remove(name)
+        self.accepted.add(name)
+
+    def do_reject(self, name):
+        if name not in self.suggested:
+            return 'Not in suggested anymore'
+        try:
+            os.remove(f'trap_pics/suggested/{name}.jpg')
+        except FileNotFoundError:
+            return f'File not found: trap_pics/suggested/{name}.jpg'
+
+        self.suggested.remove(name)
 
     def len_suggested(self):
         return len(self.suggested)
