@@ -23,7 +23,7 @@ BOT = None
 
 def cmd_trap(update: Update, _context: CallbackContext) -> None:
     with open(MEMES.fetch_random_accepted(), 'rb') as fp:
-        update.effective_message.reply_photo(fp, caption="It's a /trap!")
+        update.effective_message.reply_photo(fp, caption="It's a /trap!\n\n(Übrigens, du kannst mir neue Bilder einfach so zuschicken!)")
 
 
 def cmd_start(update: Update, _context: CallbackContext) -> None:
