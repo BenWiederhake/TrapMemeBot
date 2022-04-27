@@ -65,6 +65,7 @@ def cmd_accept_reject(update: Update, _context: CallbackContext) -> None:
 
 def cmd_receive_pic(update: Update, _context: CallbackContext) -> None:
     if len(update.message.photo) == 0:
+        # FIXME: In group chats, just silently ignore.
         update.message.reply_text(
             'Hmm? Schick mir einfach ein Bild zu, um es vorzuschlagen.'
         )
@@ -115,9 +116,9 @@ def run():
     dispatcher.add_handler(MessageHandler(Filters.text & Filters.command, cmd_accept_reject))
 
     # Start the Bot
-    # We pass 'allowed_updates' handle *all* updates including `chat_member` updates
-    # To reset this, simply pass `allowed_updates=[]`
-    updater.start_polling(allowed_updates=Update.ALL_TYPES)
+    # ALL_TYPES = ['message', 'edited_message', 'channel_post', 'edited_channel_post', 'inline_query', 'chosen_inline_result', 'callback_query', 'shipping_query', 'pre_checkout_query', 'poll', 'poll_answer', 'my_chat_member', 'chat_member', 'chat_join_request']
+    # However, we're only interested in actual messages.
+    updater.start_polling(allowed_updates=['message'])
 
     # Run the bot until you press Ctrl-C or the process receives SIGINT,
     # SIGTERM or SIGABRT. This should be used most of the time, since
