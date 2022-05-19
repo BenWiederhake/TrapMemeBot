@@ -5,7 +5,7 @@ import logging
 import os
 import secret  # See secret_template.py
 import secrets
-from telegram import Chat, ChatMember, ChatMemberUpdated, ParseMode, Update
+from telegram import Chat, ChatMember, ChatMemberUpdated, Update
 from telegram.ext import (
     CallbackContext,
     ChatMemberHandler,
