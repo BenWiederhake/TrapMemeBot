@@ -112,7 +112,7 @@ def run():
     dispatcher.add_handler(CommandHandler('trap', cmd_trap))
     dispatcher.add_handler(CommandHandler('summary', cmd_summary))
 
-    dispatcher.add_handler(MessageHandler(~Filters.text & ~Filters.command, cmd_receive_pic))
+    dispatcher.add_handler(MessageHandler(Filters.photo, cmd_receive_pic))
     dispatcher.add_handler(MessageHandler(Filters.text & Filters.command, cmd_accept_reject))
 
     # Start the Bot
