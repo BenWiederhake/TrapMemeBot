@@ -7,10 +7,11 @@ import secret  # See secret_template.py
 import secrets
 from telegram import Chat, ChatMember, ChatMemberUpdated, Update
 from telegram.ext import (
+    Application,
     CallbackContext,
     ChatMemberHandler,
     CommandHandler,
-    Filters,
+    filters,
     MessageHandler,
     Updater,
 )
@@ -100,31 +101,21 @@ def run():
 
     init_memes()
 
-    # Create the Updater and pass it your bot's token.
-    updater = Updater(secret.TOKEN)
+    application = Application.builder().token(secret.TOKEN).build()
     global BOT
-    BOT = updater.bot
+    BOT = application.bot
 
-    # Get the dispatcher to register handlers
-    dispatcher = updater.dispatcher
+    application.add_handler(CommandHandler('start', cmd_start))
+    application.add_handler(CommandHandler('trap', cmd_trap))
+    application.add_handler(CommandHandler('summary', cmd_summary))
 
-    dispatcher.add_handler(CommandHandler('start', cmd_start))
-    dispatcher.add_handler(CommandHandler('trap', cmd_trap))
-    dispatcher.add_handler(CommandHandler('summary', cmd_summary))
+    application.add_handler(MessageHandler(filters.PHOTO, cmd_receive_pic))
+    application.add_handler(MessageHandler(filters.TEXT & filters.COMMAND, cmd_accept_reject))
 
-    dispatcher.add_handler(MessageHandler(Filters.photo, cmd_receive_pic))
-    dispatcher.add_handler(MessageHandler(Filters.text & Filters.command, cmd_accept_reject))
-
-    # Start the Bot
+    logger.info("Begin idle loop")
     # ALL_TYPES = ['message', 'edited_message', 'channel_post', 'edited_channel_post', 'inline_query', 'chosen_inline_result', 'callback_query', 'shipping_query', 'pre_checkout_query', 'poll', 'poll_answer', 'my_chat_member', 'chat_member', 'chat_join_request']
     # However, we're only interested in actual messages.
-    updater.start_polling(allowed_updates=['message'])
-
-    # Run the bot until you press Ctrl-C or the process receives SIGINT,
-    # SIGTERM or SIGABRT. This should be used most of the time, since
-    # start_polling() is non-blocking and will stop the bot gracefully.
-    logger.info("Begin idle loop")
-    updater.idle()
+    application.run_polling(allowed_updates=['message'])
 
 
 if __name__ == '__main__':
